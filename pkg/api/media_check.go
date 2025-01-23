@@ -14,7 +14,7 @@ func (h *API) MediaCheck(w http.ResponseWriter, r *http.Request) {
 		Filetype   string `json:"filetype"`
 		Hash       string `json:"hash"`
 		ByteLength int    `json:"byteLength"`
-		Url        string `json:"url"`
+		Url        any    `json:"url"`
 	}
 
 	type CSS struct {
@@ -67,20 +67,24 @@ func (h *API) MediaCheck(w http.ResponseWriter, r *http.Request) {
 			zap.L().Error("media exists error", zap.Error(err))
 		}
 
+		var url any
+
 		if mediaKey != "" {
-			resp.Files = append(resp.Files, File{
-				Filetype:   req.Files[i].Filetype,
-				Hash:       req.Files[i].Hash,
-				ByteLength: req.Files[i].ByteLength,
-				Url:        h.urlMedia(mediaKey),
-			})
+			url = h.urlMedia(mediaKey)
 		} else {
+			url = false
 			h.logger(r).Info("file not exists",
 				zap.String("hash", req.Files[i].Hash),
 				zap.Int("byteLength", req.Files[i].ByteLength),
 				zap.String("filetype", req.Files[i].Filetype),
 			)
 		}
+		resp.Files = append(resp.Files, File{
+			Filetype:   req.Files[i].Filetype,
+			Hash:       req.Files[i].Hash,
+			ByteLength: req.Files[i].ByteLength,
+			Url:        url,
+		})
 	}
 
 	resp.CSS = false
