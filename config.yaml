@@ -1,0 +1,5 @@
+server_url: "https://notes.example.com"
+listen: ":5000"
+allow_create_api_key: true
+allow_change_api_key: false
+data: "./data"

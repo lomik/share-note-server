@@ -19,7 +19,9 @@ func main() {
 	flag.Parse()
 
 	// configure logging
-	logger := zap.Must(zap.NewProductionConfig().Build())
+	zapConfig := zap.NewProductionConfig()
+	zapConfig.DisableStacktrace = true
+	logger := zap.Must(zapConfig.Build())
 	defer zap.RedirectStdLog(logger)()
 	defer zap.ReplaceGlobals(logger)()
 
