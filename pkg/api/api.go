@@ -1,9 +1,11 @@
 package api
 
 import (
+	"bytes"
 	"embed"
 	"encoding/json"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 
@@ -62,13 +64,19 @@ func New(opts Options) *API {
 }
 
 func (h *API) json(w http.ResponseWriter, r *http.Request, obj interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Header.Get("Origin") != "" {
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Vary", "Origin")
+	}
+
 	resp, err := json.Marshal(obj)
 	if err != nil {
 		h.error(w, r, err, http.StatusInternalServerError)
 		return
 	}
 
-	w.Write(resp)
+	io.Copy(w, bytes.NewReader(resp))
 }
 
 func (h *API) render(w http.ResponseWriter, r *http.Request, tpl string, obj interface{}) {
