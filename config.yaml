@@ -1,5 +1,10 @@
+# Base address of the service
 server_url: "https://notes.example.com"
+# Listen host:port
 listen: ":5000"
+# Allows generating API keys for new/unrecognized UIDs
 allow_create_api_key: true
+# Allows changing the API key for an existing UID
 allow_change_api_key: false
+# Storage root directory path
 data: "./data"
