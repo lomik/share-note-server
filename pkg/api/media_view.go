@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -25,7 +27,21 @@ func (h *API) MediaView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", mime.TypeByExtension("."+media.Filetype))
+	var contentType string
+
+	// excalidraw
+	if strings.HasPrefix(media.Filetype, "md/") {
+		// detect by content
+		if bytes.HasPrefix(body, []byte("<svg")) {
+			contentType = mime.TypeByExtension(".svg")
+		}
+	}
+
+	if contentType == "" {
+		contentType = mime.TypeByExtension("." + media.Filetype)
+	}
+
+	w.Header().Set("Content-Type", contentType)
 	w.Write(body)
 }
 
